@@ -1,0 +1,212 @@
+{% extends 'layout.html' %}
+{% from '_formhelpers.html' import render_field %}
+  {% block basket %}
+    <li class="nav-item dropdown">
+      <button class="nav-link dropdown-toggle text-white bg-info border-0 me-3 ps-1" href="#"
+        id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="badge bg-danger rounded-pill" id="basketedBooks"></span> <i class="bi bi-cart3"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-end p-0 pt-2" id="myList" style="width: 18vw;"
+        aria-labelledby="navbarDropdownMenuLink">
+        <li>
+          <div class="dropdown-item px-3 d-flex justify-content-between py-0">
+            <div class="d-flex">
+              <div>
+                <span class="btn btn-white text-danger fs-5 fw-bolder removeItem">X</span>
+              </div>
+              <div class="align-self-center">
+                1984
+              </div>
+            </div>
+            <div class="align-self-center">
+              <span class="price">16</span>AZN
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="dropdown-item px-3 d-flex justify-content-between py-0">
+            <div class="d-flex">
+              <div>
+                <span class="btn btn-white text-danger fs-5 fw-bolder removeItem">X</span>
+              </div>
+              <div class="align-self-center">
+                Səfillər
+              </div>
+            </div>
+            <div class="align-self-center">
+              <span class="price">21</span>AZN
+            </div>
+          </div>
+        </li>
+        <li class="pt-2">
+          <hr class="dropdown-divider m-0 ">
+        </li>
+        <li>
+          <div class="dropdown-item" href="#">
+            <div class="dropdown-item px-3 py-2 pe-0 d-flex justify-content-between">
+              <div>
+                Cəmi
+              </div>
+              <div>
+                <span id="totalPrice"></span>AZN
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </li>
+  {% endblock %}
+  {% block content %}
+  <div class="container">
+    <div class="row mt-5 border-0 w-100">
+      <div class="col-4">
+        <img src={{image}} class="card-img-top w-75" alt="...">
+      </div>
+      <div class="col-8 text-end">
+        <h2>{{name}}</h2>
+        <span class="text-success fs-2 fw-bold" id="priceOfBook">{{'%0.2f'|format(price|float)}}</span>
+        <span class="text-danger text-decoration-line-through">{{'%0.2f'|format(old_price|float)}}</span>
+        <p class="card-text mt-5">{{content}}</p>
+        <div class="d-flex justify-content-end">
+          <div class="mx-1"><button class="bg-white border-0 fs-3"><i id="like"
+                class="bi bi-hand-thumbs-down-fill text-secondary"></i></button></div>
+          <div class="mx-1"><button class="bg-white border-0 fs-3"><i id="heart"
+                class="bi bi-heart-fill text-secondary"></i></button></div>
+          <div class="ms-2 align-self-center">
+            <button id="basket" class="btn text-light bg-info" data-toggle="modal" data-target="#alert">Səbətə əlavə
+              et</button>
+            <div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Bildiri</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    Məhsul səbətə əlavə edildi
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Bağla</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-warning mt-2 text-center" role="alert" id="infoAlert">
+      Bu kitabdan sadəcə <b>{{count}}</b> ədəd qalıb
+    </div>
+    <h3 class="text-center text-uppercase mt-5">Xüsusiyyətlər</h3>
+    <table class="table table-striped">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Xüsusiyyət</th>
+        <th scope="col">Açıqlama</th>
+      </tr>
+      <tr>
+        <th scope="row">1</th>
+        <td>Dil:</td>
+        <td>{{language}}</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Janr:</td>
+        <td>{{genre}}</td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>Müəllif:</td>
+        <td>{{author}}</td>
+      </tr>
+      <tr>
+        <th scope="row">4</th>
+        <td>Nəşriyyat:</td>
+        <td>{{publish}}</td>
+      </tr>
+    </table>
+    <form action="{{url_for('product')}}" method="POST">
+      {{ form.csrf_token }}
+      {{ render_field(form.full_name)}}
+      {{ render_field(form.comment)}}
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-5">Submit</button>
+      </div>
+    </form>
+    <div class="row d-flex flex-wrap justify-content-evenly">
+      {% for comment in range(all_comments|length) %}
+        <div class="card mb-3" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ all_comments[comment].full_name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ all_comments[comment].date_of_comment }}</h6>
+            <p class="card-text">{{ all_comments[comment].comment }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+  </div>
+  <div class="bg-info text-center text-lg-start h-50 border-bottom">
+    <div class="text-center text-light pt-3 pb-4">
+      <h4 class="pt-2">Bütün kitablar</h4>
+    </div>
+    <div class="container pb-5">
+      <div class="slicker">
+        <div>
+          <img src="{{ url_for('static', filename = 'images/Incognito.png')}}" style="width: 155px; height: 250px" alt="coupon">
+        </div>
+        <div>
+          <img src="{{ url_for('static', filename = 'images/1984.jpg')}}" style="width: 155px; height: 250px" alt="delivery">
+        </div>
+        <div>
+          <img src="{{ url_for('static', filename = 'images/Otello.png')}}" style="width: 155px; height: 250px" alt="gift">
+        </div>
+        <div>
+          <img src="{{ url_for('static', filename = 'images/Səfillər.jpg')}}" style="width: 155px; height: 250px" alt="coupon">
+        </div>
+        <div>
+          <img src="{{ url_for('static', filename = 'images/Palto.png') }}" style="width: 155px; height: 250px" alt="delivery">
+        </div>
+        <div>
+          <img src="{{ url_for('static', filename = 'images/Hamlet.png')}}" style="width: 155px; height: 250px" alt="gift">
+        </div>
+      </div>
+    </div>
+  </div>
+    {% block js %}
+      <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+      <script>
+        $('.slicker').slick({
+          centerMode: true,
+          centerPadding: '60px',
+          slidesToShow: 5,
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                arrows: false,
+                centerMode: true,
+                centerPadding: '40px',
+                slidesToShow: 5
+              }
+            },
+            {
+              breakpoint: 480,
+              settings: {
+                arrows: false,
+                centerMode: true,
+                centerPadding: '40px',
+                slidesToShow: 1
+              }
+            }
+          ]
+        });
+      </script>
+      <script src="{{url_for('static', filename = 'JS/Product.js')}}"></script>
+    {% endblock %}
+  {% endblock %}
